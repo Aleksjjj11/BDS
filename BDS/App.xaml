@@ -4,6 +4,101 @@
              xmlns:local="clr-namespace:BDS"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
-         
+        <Style x:Key="GridHeaderStyle" TargetType="DataGridColumnHeader">
+             <Setter Property="Background" Value="#A5A5A5"></Setter>
+             <Setter Property="Foreground" Value="White"></Setter>
+             <Setter Property="Margin" Value="5"></Setter>
+         </Style>
+        <Style TargetType="Button" x:Key="ButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Rectangle RadiusX="15" RadiusY="15"
+                                       Fill="#505050"></Rectangle>
+                            <Label Content="{TemplateBinding Content}"
+                                   Foreground="White"
+                                   Padding="0"
+                                   HorizontalAlignment="Center"
+                                   HorizontalContentAlignment="Center"
+                                   VerticalContentAlignment="Center"
+                                   VerticalAlignment="Center"></Label>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid>
+                                    <Rectangle RadiusX="15" RadiusY="15"
+                                               Fill="#848484"></Rectangle>
+                                    <Label Content="{TemplateBinding Content}"
+                                           Foreground="White"
+                                           Padding="0"
+                                           HorizontalAlignment="Center"
+                                           HorizontalContentAlignment="Center"
+                                           VerticalContentAlignment="Center"
+                                           VerticalAlignment="Center"></Label>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid>
+                                    <Rectangle RadiusX="15" RadiusY="15"
+                                               Fill="White"></Rectangle>
+                                    <Label Content="{TemplateBinding Content}"
+                                           Foreground="Black"
+                                           Padding="0"
+                                           HorizontalAlignment="Center"
+                                           HorizontalContentAlignment="Center"
+                                           VerticalContentAlignment="Center"
+                                           VerticalAlignment="Center"></Label>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <ControlTemplate x:Key="TextBoxCircle" TargetType="{x:Type TextBox}">
+            <Border CornerRadius="10"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    BorderThickness="1"
+                    BorderBrush="#505050"
+                    Background="#505050">
+                <TextBox Text="{TemplateBinding Text}" Width="{TemplateBinding Width}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                         Foreground="White"
+                         FontSize="{TemplateBinding FontSize}"
+                         Height="{TemplateBinding Height}"
+                         TextAlignment="{TemplateBinding TextAlignment}">
+                </TextBox>
+            </Border>
+        </ControlTemplate>
+        <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Background" Value="Transparent"></Setter>
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="TextAlignment" Value="Center"></Setter>
+            <Setter Property="Template" Value="{StaticResource TextBoxCircle}"></Setter>
+        </Style>
+        <Style x:Key="BorderCircleStyle" TargetType="{x:Type Border}">
+            <Setter Property="CornerRadius" Value="10"></Setter>
+            <Setter Property="Background" Value="#A5A5A5"></Setter>
+            <Setter Property="BorderBrush" Value="#505050"></Setter>
+            <Setter Property="BorderThickness" Value="2"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        </Style>
     </Application.Resources>
 </Application>
