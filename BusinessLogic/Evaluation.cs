@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic
 {
-    public class Evaluation
+    public static class Evaluation
     {
+        public static double GetMedian(double[] array)
+        {
+            return array.Count() == 0 ? 0 : array.Sum(x => x) / array.Count();
+        }
     }
 }

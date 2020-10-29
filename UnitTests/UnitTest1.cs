@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Net.Mime;
 
+
 namespace UnitTests
 {
     public class Tests
@@ -23,13 +24,13 @@ namespace UnitTests
             double median = Evaluation.GetMedian(testArr);
             Assert.AreEqual(5, median);
         }
-    }
 
-    public static class Evaluation
-    {
-        public static double GetMedian(double[] array)
+        [Test]
+        public void MedianOfEmptyArray_MustReturn_0()
         {
-            return array.Sum(x => x) / array.Count();
+            double[] testArr = { 5, 5, 5, 10, 0 };
+            double median = Evaluation.GetMedian(testArr);
+            Assert.AreEqual(5, median);
         }
     }
 }
