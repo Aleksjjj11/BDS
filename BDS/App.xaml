@@ -4,6 +4,147 @@
              xmlns:local="clr-namespace:BDS"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
-         
+        <Style x:Key="ColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#A5A5A5"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="Margin" Value="5"></Setter>
+            <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+        </Style>
+        <Style TargetType="Button" x:Key="ButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Rectangle RadiusX="15" RadiusY="15"
+                                       Fill="#505050"></Rectangle>
+                            <Label Content="{TemplateBinding Content}"
+                                   Foreground="White"
+                                   Padding="0"
+                                   HorizontalAlignment="Center"
+                                   HorizontalContentAlignment="Center"
+                                   VerticalContentAlignment="Center"
+                                   VerticalAlignment="Center"></Label>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid>
+                                    <Rectangle RadiusX="15" RadiusY="15"
+                                               Fill="#848484"></Rectangle>
+                                    <Label Content="{TemplateBinding Content}"
+                                           Foreground="White"
+                                           Padding="0"
+                                           HorizontalAlignment="Center"
+                                           HorizontalContentAlignment="Center"
+                                           VerticalContentAlignment="Center"
+                                           VerticalAlignment="Center"></Label>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid>
+                                    <Rectangle RadiusX="15" RadiusY="15"
+                                               Fill="White"></Rectangle>
+                                    <Label Content="{TemplateBinding Content}"
+                                           Foreground="Black"
+                                           Padding="0"
+                                           HorizontalAlignment="Center"
+                                           HorizontalContentAlignment="Center"
+                                           VerticalContentAlignment="Center"
+                                           VerticalAlignment="Center"></Label>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <ControlTemplate x:Key="TextBoxCircle" TargetType="{x:Type TextBox}">
+            <Border CornerRadius="10"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    BorderThickness="1"
+                    BorderBrush="#505050"
+                    Background="#505050">
+                <TextBox Text="{TemplateBinding Text}" Width="{TemplateBinding Width}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                         Foreground="White"
+                         FontSize="{TemplateBinding FontSize}"
+                         Height="{TemplateBinding Height}"
+                         TextAlignment="{TemplateBinding TextAlignment}">
+                </TextBox>
+            </Border>
+        </ControlTemplate>
+        <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Background" Value="Transparent"></Setter>
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="TextAlignment" Value="Center"></Setter>
+            <Setter Property="Template" Value="{StaticResource TextBoxCircle}"></Setter>
+        </Style>
+        <Style x:Key="BorderCircleStyle" TargetType="{x:Type Border}">
+            <Setter Property="CornerRadius" Value="10"></Setter>
+            <Setter Property="Background" Value="#A5A5A5"></Setter>
+            <Setter Property="BorderBrush" Value="#505050"></Setter>
+            <Setter Property="BorderThickness" Value="2"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        </Style>
+        <Style x:Key="HighButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="VerticalContentAlignment" Value="Top"></Setter>
+            <Setter Property="Height" Value="30"></Setter>
+            <Setter Property="Width" Value="50"></Setter>
+            <Setter Property="FontSize" Value="20"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="Padding" Value="5"></Setter>
+        </Style>
+        <DrawingImage x:Key="CloseIcon">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V8 H6 V0 H0 Z">
+                    <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1 M6,8z M0,0z M3.00977,3.61523L4.71387,0.890625 5.81738,0.890625 3.57129,4.41602 5.87109,8 4.75781,8 3.00977,5.22656 1.25195,8 0.143555,8 2.44824,4.41602 0.197266,0.890625 1.2959,0.890625 3.00977,3.61523z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="HideIcon">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1 H9 V0 H0 Z">
+                    <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1 M9,1z M0,0z M4.48047,0.737305L0.0078125,0.737305 0.0078125,0 4.48047,0 4.48047,0.737305z M8.99219,0.737305L4.51953,0.737305 4.51953,0 8.99219,0 8.99219,0.737305z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="ResizeIcon">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V9 H11 V0 H0 Z">
+                    <GeometryDrawing Brush="Transparent">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#FFFFFFFF" Thickness="1" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry RadiusX="0" RadiusY="0" Rect="2.5,0.5,8,6" />
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="Transparent">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#FFFFFFFF" Thickness="1" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry RadiusX="0" RadiusY="0" Rect="0.5,2.5,8,6" />
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
     </Application.Resources>
 </Application>

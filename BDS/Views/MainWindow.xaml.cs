@@ -27,5 +27,10 @@ namespace BDS
             DataContext = _viewModel = new MainViewModel();
             InitializeComponent();
         }
+
+        private void MainWindow_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
     }
 }
