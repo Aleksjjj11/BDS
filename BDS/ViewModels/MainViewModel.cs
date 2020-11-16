@@ -38,6 +38,20 @@ namespace BDS.ViewModels
             }, x => true);
         }
 
+        private ICommand _resizeAppCommand;
+
+        public ICommand ResizeAppCommand => _resizeAppCommand ?? new RelayCommand<Window>(x =>
+        {
+            x.WindowState = x.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }, x => true);
+
+        private ICommand _rollupAppCommand;
+
+        public ICommand RollupAppCommand => _rollupAppCommand ?? new RelayCommand<Window>(x =>
+        {
+            x.WindowState = WindowState.Minimized;
+        }, x => true);
+
         private int _countIndicator;
         public int CountIndicator
         {
@@ -67,6 +81,7 @@ namespace BDS.ViewModels
         {
             Parameters = new ObservableCollection<Parameter>();
             ValuesParams = new ObservableCollection<ValuesModel>();
+            
             for (int i = 0; i < 10; i++)
             {
                 ValuesParams.Add(new ValuesModel{ ValueFirstParam = i, ValueSecondParam = i, ValueThirdParam = i});
