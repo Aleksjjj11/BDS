@@ -1,8 +1,5 @@
+using BusinessLogic;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Net.Mime;
-
 
 namespace UnitTests
 {
@@ -43,19 +40,4 @@ namespace UnitTests
         }
     }
 
-    public static class Evaluation
-    {
-
-        private static double median;
-        private static double sigma;
-        public static double GetMedian(double[] array)
-        {
-            return median = array.Length == 0 ? 0 : array.Sum(x => x) / array.Count();
-        }
-
-        public static double GetSigma(double[] array)
-        {
-            return sigma = array.Length == 0 ? 0 : array.Sum(x => Math.Pow(x - median, 2));
-        }
-    }
 }

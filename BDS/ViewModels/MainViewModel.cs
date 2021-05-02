@@ -1,42 +1,65 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using BDS.Annotations;
 using BDS.Commands;
+using BusinessLogic.Interfaces;
+using BusinessLogic.Models;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using LiveCharts;
+using LiveCharts.Definitions.Charts;
+using LiveCharts.Wpf;
+using Microsoft.Win32;
+using Separator = LiveCharts.Wpf.Separator;
 
 namespace BDS.ViewModels
 {
-    public class ValuesModel : BaseViewModel
-    {
-        public long ValueFirstParam { get; set; }
-        public long ValueSecondParam { get; set; }
-        public long ValueThirdParam { get; set; }
-    }
-
-    public class Parameter : BaseViewModel
-    {
-        public string Name { get; set; }
-        public double Median { get; set; }
-        public double Sigma { get; set; }
-    }
     public class MainViewModel : BaseViewModel
     {
+        public ObservableCollection<Parameter> Parameters { get; set; }
+        public ObservableCollection<Item> ValuesParameters { get; set; }
+        public SeriesCollection SeriesCollection { get; set; }
+        public string[] Labels { get; set; }
+        public Func<double, string> Formatter { get; set; }
+
+        private ICommand _createRowsOnGrid;
+        public ICommand CreateRowsOnGrid => _createRowsOnGrid ?? new RelayCommand(() =>
+        {
+            for (var i = CountIndicator - ValuesParameters.Count; i > 0; i--)
+            {
+                ValuesParameters.Add(new Item{ValueFirstParameter = 0, ValueSecondParameter = 0, ValueThirdParameter = 0});
+            }
+        }, () => true);
+
+        private ICommand _updateParameters;
+
+        public ICommand UpdateParameters => _updateParameters ?? new RelayCommand(() =>
+        {
+            Parameters[0].Values.Clear();
+            Parameters[1].Values.Clear();
+            Parameters[2].Values.Clear();
+
+            foreach (var valuesParameter in ValuesParameters)
+            {
+                Parameters[0].Values.Add(valuesParameter.ValueFirstParameter);
+                Parameters[1].Values.Add(valuesParameter.ValueSecondParameter);
+                Parameters[2].Values.Add(valuesParameter.ValueThirdParameter);
+            }
+            Parameters[0].Update();
+            Parameters[1].Update();
+            Parameters[2].Update();
+        }, () => true);
+
         private ICommand _closeAppCommand;
 
-        public ICommand CloseAppCommand
-        {
-            get => _closeAppCommand ?? new RelayCommand<Window>(x =>
+        public ICommand CloseAppCommand =>
+            _closeAppCommand ?? new RelayCommand<Window>(x =>
             {
                 x.Close();
             }, x => true);
-        }
 
         private ICommand _resizeAppCommand;
 
@@ -74,34 +97,87 @@ namespace BDS.ViewModels
                 OnPropertyChanged(nameof(NumberOfParameter));
             }
         }
-        public ObservableCollection<ValuesModel> ValuesParams { get; set; }
-        public ObservableCollection<Parameter> Parameters { get; set; }
+
+        private ICommand _showCharts;
+        public ICommand ShowCharts => _showCharts ?? new RelayCommand(() =>
+        {
+            SeriesCollection.Clear();
+            int[] dataToShow = new int[Labels.Length];
+            var xLine = new []
+            {
+                Parameters[NumberOfParameter-1].Sigma * -4, 
+                Parameters[NumberOfParameter-1].Sigma * -3, 
+                Parameters[NumberOfParameter-1].Sigma * -2, 
+                Parameters[NumberOfParameter-1].Sigma * -1, 
+                Parameters[NumberOfParameter-1].Sigma * 0, 
+                Parameters[NumberOfParameter-1].Sigma * 1, 
+                Parameters[NumberOfParameter-1].Sigma * 2, 
+                Parameters[NumberOfParameter-1].Sigma * 3,
+                Parameters[NumberOfParameter-1].Sigma * 4,
+            };
+            for (int i = 0; i < dataToShow.Length; i++)
+            {
+                dataToShow[i] = Parameters[NumberOfParameter - 1].Values.Count(x => x <= xLine[i + 1] && x >= xLine[i]);
+            }
+            SeriesCollection.Add(new ColumnSeries
+            {
+                Title = Parameters[NumberOfParameter - 1].Name,
+                Values = new ChartValues<int>(dataToShow),
+                Fill = System.Windows.Media.Brushes.IndianRed,
+                Stroke = System.Windows.Media.Brushes.DarkRed
+            });
+        }, () => NumberOfParameter > 0 && NumberOfParameter < 4);
 
         public MainViewModel()
         {
             Parameters = new ObservableCollection<Parameter>();
-            ValuesParams = new ObservableCollection<ValuesModel>();
-            
-            for (int i = 0; i < 10; i++)
-            {
-                ValuesParams.Add(new ValuesModel{ ValueFirstParam = i, ValueSecondParam = i, ValueThirdParam = i});
-            }
+            ValuesParameters = new ObservableCollection<Item>();
 
-            Parameters.Add(new Parameter
+            InitCommands();
+
+            Parameters.Add(new Parameter("Параметр 1"));
+            Parameters.Add(new Parameter("Параметр 2"));
+            Parameters.Add(new Parameter("Параметр 3"));
+            Labels = new[]{ "-4S <= X >= -3S", "-3S <= X >=-2S", "-2S <= X >=-S", "-S <= X >= 0", "0 <= X >= S", "S <= X >= 2S", "2S <= X >= 3S", "3S <= X >= 4S" };
+            SeriesCollection = new SeriesCollection();
+            Formatter = value => value.ToString("N");
+        }
+
+        private string _filePath;
+
+        public string FilePath
+        {
+            get => _filePath;
+            set
             {
-                Name = $"Параметр 1",
-                Median = (double)ValuesParams.Sum(x => x.ValueFirstParam) / ValuesParams.Count
-            });
-            Parameters.Add(new Parameter
+                if (_filePath == value) return;
+
+                _filePath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand OpenExcelFile { get; set; }
+        public ICommand LoadDataFromExcelFile { get; set; }
+
+        private void InitCommands()
+        {
+            OpenExcelFile = new RelayCommand(() =>
             {
-                Name = $"Параметр 2",
-                Median = (double)ValuesParams.Sum(x => x.ValueSecondParam) / ValuesParams.Count
-            });
-            Parameters.Add(new Parameter
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.Filter = "Excel files (*.xlsx)|*.xlsx|(*.xls)|*.xls";
+                openFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                if (openFile.ShowDialog() == true)
+                    FilePath = openFile.FileName;
+
+                OnPropertyChanged(nameof(FilePath));
+            }, () => true);
+
+            LoadDataFromExcelFile = new RelayCommand(() =>
             {
-                Name = $"Параметр 3",
-                Median = (double)ValuesParams.Sum(x => x.ValueThirdParam) / ValuesParams.Count
-            });
+
+            }, () => string.IsNullOrWhiteSpace(FilePath) == false);
         }
     }
 }

@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BDS"
         xmlns:viewModels="clr-namespace:BDS.ViewModels"
+        xmlns:models="clr-namespace:BusinessLogic.Models;assembly=BusinessLogic"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="Система медико-биологической диагностики" 
         Height="750" Width="900"
@@ -98,81 +100,205 @@
                 </Style>
             </TabControl.Resources>
             <TabItem Header="Метод сигмальных отклонений">
-                <Grid Background="#8A888B">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="15*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Row="0"
+                            Grid.Column="0"
+                            CornerRadius="15"
+                            Height="30"
+                            Background="#505050">
+                        <Grid VerticalAlignment="Center"
+                              Height="30">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="8*"/>
+                                <ColumnDefinition Width="4*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Margin="10, 0"
+                                       VerticalAlignment="Center"
+                                       Text="Путь к файлу:">
+                            </TextBlock>
+                            <Button Grid.Column="2"
+                                    Content="Загрузить"
+                                    Background="#6B427E"
+                                    Foreground="White"
+                                    Padding="8 0">
+                                <Button.Resources>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding FilePath}" Value="{x:Null}"></DataTrigger>
+                                            <Trigger Property="IsEnabled" Value="True">
+                                                <Setter Property="Foreground" Value="Gray"></Setter>
+                                                <Setter Property="Background" Value="Red"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Resources>
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <Border CornerRadius="10"
+                                                Background="{TemplateBinding Button.Background}">
+                                            <Button Content="{TemplateBinding Button.Content}"
+                                                    Foreground="{TemplateBinding Button.Foreground}"
+                                                    Padding="{TemplateBinding Button.Padding}"
+                                                    HorizontalContentAlignment="Right"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    BorderBrush="Transparent"></Button>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <TextBox Grid.Column="1" 
+                                     Grid.ColumnSpan="2"
+                                     Width="400"
+                                     HorizontalAlignment="Left"
+                                     Margin="10  0"
+                                     Foreground="White"
+                                     IsReadOnly="True"
+                                     Text="{Binding FilePath, Mode=OneWay}">
+                                <TextBox.Template>
+                                    <ControlTemplate>
+                                        <Border CornerRadius="10" 
+                                                Padding="0"
+                                                Height="{TemplateBinding TextBox.Height}"
+                                                Width="{TemplateBinding TextBox.Width}"
+                                                Background="#A5A5A5">
+                                            <DockPanel>
+                                                <TextBox Text="{TemplateBinding TextBox.Text}"
+                                                         Foreground="{TemplateBinding TextBox.Foreground}"
+                                                         VerticalAlignment="Center"
+                                                         Padding="10 0"
+                                                         BorderThickness="0"
+                                                         BorderBrush="Transparent"
+                                                         Background="Transparent"></TextBox>
+                                                <Border Background="#505050"
+                                                        Width="50"
+                                                        Height="25"
+                                                        HorizontalAlignment="Right"
+                                                        Margin="10, 0"
+                                                        CornerRadius="10">
+                                                    <Button Content="..."
+                                                            Command="{Binding OpenExcelFile}"
+                                                            Background="Transparent"
+                                                            BorderBrush="Transparent"
+                                                            BorderThickness="0"
+                                                            Foreground="White"></Button>
+                                                </Border>
+                                            </DockPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </TextBox.Template>
+                            </TextBox>
+                        </Grid>
+                    </Border>
+                </Grid>
+                <!--<Grid Background="#8A888B">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Vertical"
-                                            Grid.Column="0"
-                                            Margin="0 15 0 0">
+                                Grid.Column="0"
+                                Margin="0 15 0 0">
                         <Border Background="#A5A5A5"
-                                            CornerRadius="15"
-                                            BorderThickness="2"
-                                            Margin="20 10"
-                                            VerticalAlignment="Center">
+                                CornerRadius="15"
+                                BorderThickness="2"
+                                Margin="20 10"
+                                VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal"
-                                                    VerticalAlignment="Center"
-                                                    HorizontalAlignment="Center"
-                                                    ClipToBounds="True"
-                                                    Height="40">
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ClipToBounds="True"
+                                        Height="40">
                                 <TextBlock FontSize="20" 
-                                                       VerticalAlignment="Center"
-                                                       Margin="5 0"
-                                                       Text="Введите число показателей:"></TextBlock>
+                                           VerticalAlignment="Center"
+                                           Margin="5 0"
+                                           Text="Введите число показателей:"></TextBlock>
                                 <TextBox Style="{StaticResource TextBoxStyle}"
-                                                     Text="{Binding CountIndicator,
-                                                         Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                     Width="75" Height="25"
-                                                     Margin="0"
-                                                     TextAlignment="Center">
+                                         Text="{Binding CountIndicator,
+                                         Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                         Width="75" Height="25" FontSize="20"
+                                         Margin="0">
                                 </TextBox>
-                                <Button Content="OK" Margin="5 0"
-                                                    Height="30" Width="45"
-                                                    Style="{StaticResource ButtonStyle}">
+                                <Button Content="OK" Margin="5,0,5,5"
+                                        Height="30" Width="45"
+                                        Style="{StaticResource ButtonStyle}"
+                                        Command="{Binding CreateRowsOnGrid}" VerticalAlignment="Bottom">
 
                                 </Button>
                             </StackPanel>
                         </Border>
                         <Border Style="{StaticResource BorderCircleStyle}"
-                                            Margin="10">
+                                Margin="10">
                             <DataGrid Height="150"
-                                                  HeadersVisibility="None"
-                                                  HorizontalGridLinesBrush="#8A888B"
-                                                  VerticalGridLinesBrush="#8A888B"
-                                                  RowBackground="Transparent"
-                                                  BorderThickness="0"
-                                                  Background="Transparent"
-                                                  Foreground="White"
-                                                  VerticalScrollBarVisibility="Hidden"
-                                                  HorizontalScrollBarVisibility="Disabled"
-                                                  ItemsSource="{Binding ValuesParams,
+                                      HeadersVisibility="Column"
+                                      HorizontalGridLinesBrush="#8A888B"
+                                      ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
+                                      VerticalGridLinesBrush="#8A888B"
+                                      RowBackground="Transparent"
+                                      BorderThickness="0"
+                                      Background="Transparent"
+                                      Foreground="White"
+                                      VerticalScrollBarVisibility="Hidden"
+                                      CanUserAddRows="False"
+                                      AutoGenerateColumns="False"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      ItemsSource="{Binding ValuesParameters,
                                                   Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Параметр 1" 
+                                                        Binding="{Binding ValueFirstParameter}"
+                                                        Width="140"/>
+                                    <DataGridTextColumn Header="Параметр 2" 
+                                                        Binding="{Binding ValueSecondParameter}"
+                                                        Width="140"/>
+                                    <DataGridTextColumn Header="Параметр 3" 
+                                                        Binding="{Binding ValueThirdParameter}"
+                                                        Width="140"/>
+                                </DataGrid.Columns>
                             </DataGrid>
+
                         </Border>
                         <Button Content="Расчитать" 
-                                            Height="30" Width="120"
-                                            Margin="20 10"
-                                            HorizontalAlignment="Left"
-                                            Style="{StaticResource ButtonStyle}">
+                                Height="30" Width="120"
+                                Margin="20 10"
+                                HorizontalAlignment="Left"
+                                Style="{StaticResource ButtonStyle}"
+                                Command="{Binding UpdateParameters}">
                         </Button>
                         <Border Style="{StaticResource BorderCircleStyle}"
                                             Margin="20">
                             <DataGrid Height="150"
-                                                  ColumnWidth="150"
-                                                  RowHeight="40"
-                                                  GridLinesVisibility="None"
-                                                  RowBackground="Transparent"
-                                                  HeadersVisibility="Column"
-                                                  BorderThickness="0"
-                                                  Background="Transparent"
-                                                  Foreground="White"
-                                                  VerticalScrollBarVisibility="Hidden"
-                                                  HorizontalScrollBarVisibility="Disabled"
-                                                  ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
-                                                  ItemsSource="{Binding Parameters,
+                                      IsReadOnly="True"
+                                      ColumnWidth="150"
+                                      RowHeight="40"
+                                      GridLinesVisibility="None"
+                                      RowBackground="Transparent"
+                                      HeadersVisibility="Column"
+                                      BorderThickness="0"
+                                      Background="Transparent"
+                                      Foreground="White"
+                                      VerticalScrollBarVisibility="Hidden"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      AutoGenerateColumns="False"
+                                      ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
+                                      ItemsSource="{Binding Parameters,
                                                   Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Параметр" Binding="{Binding Name}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Медиана" Binding="{Binding Median}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Сигма" Binding="{Binding Sigma}"></DataGridTextColumn>
+                                </DataGrid.Columns>
                             </DataGrid>
                         </Border>
                         <Border Style="{StaticResource BorderCircleStyle}"
@@ -182,44 +308,59 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Column="0" Width="250"
-                                                      Text="Для вывода графика динамики показателей введите номер характеристики и нажмите кнопку ПОКАЗАТЬ" 
-                                                      TextWrapping="Wrap"
-                                                      TextAlignment="Center"
-                                                      HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Row="0" 
+                                           Grid.Column="0" Width="250"
+                                           Text="Для вывода графика динамики показателей введите номер характеристики и нажмите кнопку ПОКАЗАТЬ" 
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"/>
                                 <Grid Grid.Row="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBox Grid.Column="0" 
-                                                         Text="{Binding NumberOfParameter,
+                                             Text="{Binding NumberOfParameter,
                                                          Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                         Style="{StaticResource TextBoxStyle}"
-                                                         Width="100"
-                                                         Height="30"
-                                                         FontSize="20">
+                                             Style="{StaticResource TextBoxStyle}"
+                                             Width="100"
+                                             Height="30"
+                                             FontSize="20">
                                     </TextBox>
                                     <Button Grid.Column="1" 
-                                                    Content="Показать" 
-                                                    Height="30" Width="120"
-                                                    Margin="20 10"
-                                                    HorizontalAlignment="Left"
-                                                    Style="{StaticResource ButtonStyle}">
+                                            Content="Показать" 
+                                            Height="30" Width="120"
+                                            Margin="20 10"
+                                            HorizontalAlignment="Left"
+                                            Style="{StaticResource ButtonStyle}"
+                                            Command="{Binding ShowCharts}">
                                     </Button>
                                 </Grid>
                             </Grid>
                         </Border>
                     </StackPanel>
                     <Border Grid.Column="1"
-                                    Style="{StaticResource BorderCircleStyle}"
-                                    Margin="20"
-                                    Height="625">
+                            Style="{StaticResource BorderCircleStyle}"
+                            Margin="20"
+                            Height="625" Padding="10">
                         <Grid>
-
+                            <lvc:CartesianChart Series="{Binding SeriesCollection}" 
+                                                LegendLocation="Top" Foreground="Black">
+                                <lvc:CartesianChart.AxisX>
+                                    <lvc:Axis Foreground="Linen" FontSize="16" 
+                                              Labels="{Binding Labels}"
+                                              ></lvc:Axis>
+                                </lvc:CartesianChart.AxisX>
+                                <lvc:CartesianChart.AxisY>
+                                    <lvc:Axis Title="Количество значений" 
+                                              LabelFormatter="{Binding Formatter}"
+                                              Foreground="Linen" FontSize="16"
+                                              IsMerged="True"></lvc:Axis>
+                                </lvc:CartesianChart.AxisY>
+                            </lvc:CartesianChart>
                         </Grid>
                     </Border>
-                </Grid>
+                </Grid>-->
             </TabItem>
             <TabItem Header="Метод Вальда">
                 <Grid>
